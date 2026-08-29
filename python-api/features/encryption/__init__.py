@@ -1,0 +1,1 @@
+# ROSETIC:encryption-guid

@@ -1,0 +1,44 @@
+{
+	// Cloudflare Python Worker (open beta) — pywrangler flow (WSL/Linux/macOS):
+	// run with `uv run pywrangler dev`, deploy with `uv run pywrangler deploy`.
+	"name": "python-worker-wsl",
+	"main": "worker.py",
+	"compatibility_date": "2026-08-01",
+	"compatibility_flags": [
+		"python_workers",
+		"python_dedicated_snapshot",
+		// Serve the runtime's built-in `workers`/`asgi` SDK. The installed
+		// workers-py (1.16.x) predates the external-SDK vendoring the runtime
+		// asks for at this compatibility date; once workers-py ships it, try
+		// removing this flag.
+		"disable_python_external_sdk"
+	],
+	"assets": {
+		// Built React SPA from ../web-static — run `bun run build` (or npm) there
+		// before `pywrangler dev`/`deploy`; wrangler errors if the directory is missing.
+		"directory": "../web-static/dist",
+		// Unmatched paths (client-side routes) get index.html with a 200.
+		"not_found_handling": "single-page-application",
+		// /api/* plus FastAPI's docs UI reach the Python worker; every other
+		// path is served from the assets directory (SPA fallback included).
+		"run_worker_first": [
+			"/api/*",
+			"/docs",
+			"/docs/*",
+			"/openapi.json"
+		]
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "python-worker-wsl-db",
+			// Replace after `npx wrangler d1 create python-worker-wsl-db`.
+			// Local dev uses a local SQLite simulation and does not need a real id.
+			"database_id": "24916560-ef89-4c26-a93f-12277f8ae8e5",
+			"migrations_dir": "migrations"
+		}
+	],
+	"vars": {
+		"ENV": "development"
+	}
+}

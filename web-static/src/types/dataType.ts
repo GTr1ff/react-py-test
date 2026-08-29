@@ -1,0 +1,15 @@
+export type DataType =
+  | 'date'
+  | 'datetime'
+  | 'timestamp'
+  | 'int'
+  | 'integer'
+  | 'bigint'
+  | 'decimal'
+  | 'numeric'
+  | 'float'
+  | 'varchar'
+  | 'text'
+  | 'string'
+  | 'boolean'
+  | 'bool';
