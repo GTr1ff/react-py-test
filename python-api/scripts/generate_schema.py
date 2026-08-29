@@ -33,5 +33,6 @@ def generate_ddl() -> str:
 
 if __name__ == "__main__":
     output_path = PROJECT_ROOT / "migrations" / "0001_initial.sql"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generate_ddl(), encoding="utf-8")
     print(f"Wrote {output_path}")
