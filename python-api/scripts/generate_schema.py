@@ -17,26 +17,20 @@ from sqlalchemy.schema import CreateIndex, CreateTable  # noqa: E402
 
 from core.d1 import DIALECT  # noqa: E402
 from core.database import Base  # noqa: E402
-import features.tables.benefits.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.datatypestest.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.departments.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.documents.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.employee_benefits.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.employee_projects.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.employees.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.holiday_calendar.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.job_history.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.leaves.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.locations.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.memos.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.payroll.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.performance_reviews.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.projects.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.roles.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.salaries.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.settings.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.tasks.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.time_logs.models
+import features.tables.audit_log.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.category.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.consent.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.event_log.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.ingredient.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.inventory_item.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.notification.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.recipe.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.recipe_ingredient.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.session_.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.shopping_list_item.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.tag.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.user.models  # noqa: F401, E402 — registers tables on Base.metadata
+import features.tables.user_preference.models  # noqa: F401, E402 — registers tables on Base.metadata
 
 def generate_ddl() -> str:
     """Render all registered tables (and their indexes) as SQLite DDL."""
