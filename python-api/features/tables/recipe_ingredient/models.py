@@ -26,7 +26,6 @@ class RecipeIngredientModel(Base):
         sqlalchemy.BigInteger,
         sqlalchemy.ForeignKey("public.recipe.id"),
         primary_key=True, 
-        autoincrement=True, 
         index=True
     )
     ingredient_id: Mapped[int] = mapped_column(
