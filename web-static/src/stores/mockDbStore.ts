@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { generateRows, type Table } from "@/devtools/generateMock";
+import { generateRows } from "@/devtools/generateMock";
+import { type Table } from "@/types/table";
 
 interface Row {
   [key: string]: unknown;

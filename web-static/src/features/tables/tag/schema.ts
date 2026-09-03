@@ -1,0 +1,82 @@
+import { Table } from "@/types/table";
+
+export const tagSchema: Table = {
+  name: "tag",
+  columns: [
+    {
+      name: "id",
+      dataType: "big int",
+      isNullable: false,
+      isAutoIncrement: true,
+      maxLength: 0,
+      numericScale: 0,
+      isPrimaryKey: true,
+      isForeignKey: false,
+      isUnique: true,
+      isIndex: true,
+      subDatatype: null,
+      defaultSetting: "",
+      numericPrecision: 64
+    },
+    {
+      name: "tag_name",
+      dataType: "text",
+      isNullable: false,
+      isAutoIncrement: false,
+      maxLength: 0,
+      numericScale: 0,
+      isPrimaryKey: false,
+      isForeignKey: false,
+      isUnique: true,
+      isIndex: true,
+      subDatatype: null,
+      defaultSetting: "",
+      numericPrecision: 0
+    },
+    {
+      name: "description",
+      dataType: "text",
+      isNullable: true,
+      isAutoIncrement: false,
+      maxLength: 0,
+      numericScale: 0,
+      isPrimaryKey: false,
+      isForeignKey: false,
+      isUnique: false,
+      isIndex: false,
+      subDatatype: null,
+      defaultSetting: "",
+      numericPrecision: 0
+    },
+    {
+      name: "created_at",
+      dataType: "timestamp with time zone",
+      isNullable: false,
+      isAutoIncrement: false,
+      maxLength: 0,
+      numericScale: 0,
+      isPrimaryKey: false,
+      isForeignKey: false,
+      isUnique: false,
+      isIndex: true,
+      subDatatype: null,
+      defaultSetting: "CURRENT_TIMESTAMP",
+      numericPrecision: 0
+    },
+    {
+      name: "updated_at",
+      dataType: "timestamp with time zone",
+      isNullable: false,
+      isAutoIncrement: false,
+      maxLength: 0,
+      numericScale: 0,
+      isPrimaryKey: false,
+      isForeignKey: false,
+      isUnique: false,
+      isIndex: true,
+      subDatatype: null,
+      defaultSetting: "CURRENT_TIMESTAMP",
+      numericPrecision: 0
+    },
+  ],
+};

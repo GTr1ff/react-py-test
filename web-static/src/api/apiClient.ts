@@ -61,6 +61,14 @@ class ApiClient {
     return PaginatedResponse.fromJson(response.data, options.fromJson);
   }
 
+  async postPaginated<T>(
+    path: string,
+    options: { data?: unknown; params?: object; fromJson: (data: unknown) => T },
+  ): Promise<PaginatedResponse<T>> {
+    const response = await this._axios.post(path, options.data, { params: options.params });
+    return PaginatedResponse.fromJson(response.data, options.fromJson);
+  }
+
   async post<T>(
     path: string,
     options?: { data?: unknown; params?: object; fromJson?: (data: unknown) => T },
