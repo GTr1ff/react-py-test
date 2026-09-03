@@ -12,7 +12,7 @@ def create_app() -> FastAPI:
     setup_logging()
 
     application = FastAPI(
-        title="zz-work",
+        title="Tastebot2",
         description="A proof of concept FastAPI application following the FOA architecture",
         version="1.0.0",
     )

@@ -27,6 +27,6 @@ class TestMainApp:
 
     def test_app_metadata(self, test_app: FastAPI):
         """Test that app metadata is properly set."""
-        assert test_app.title == "zz-work"
+        assert test_app.title == "Tastebot2"
         assert test_app.version == "1.0.0"
         assert "FOA architecture" in test_app.description

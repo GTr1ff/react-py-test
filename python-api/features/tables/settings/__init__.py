@@ -1,1 +1,0 @@
-# ROSETIC:crud-guid
