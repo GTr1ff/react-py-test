@@ -3,13 +3,11 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "zz-work"
+name = "worker-wip"
 version = "1.0.0"
 description = "FastAPI service organized via Feature-Oriented Architecture."
 requires-python = ">=3.11"
 dependencies = [
-    # Plain names on purpose: never use fastapi[standard] or sqlalchemy[asyncio] —
-    # those extras pull native packages (uvloop, greenlet) with no wasm builds.
     "fastapi",
     "sqlalchemy~=2.0",
     "pydantic~=2.0",
@@ -17,7 +15,6 @@ dependencies = [
 ]
 
 [dependency-groups]
-
 dev = [
     "workers-py",
     "pytest~=9.0.3",
@@ -27,6 +24,7 @@ dev = [
     "httpx~=0.28.0",
     "polyfactory~=3.3.0",
 ]
+
 [tool.hatch.build.targets.wheel]
 packages = ["core", "features"]
 exclude = ["**/__pycache__", "**/tests/**"]

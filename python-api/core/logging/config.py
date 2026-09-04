@@ -7,8 +7,6 @@ from core.logging.data_filter import SensitiveDataLoggingFilter
 
 def setup_logging() -> None:
     """Configure logging for the application"""
-
-
     sensitive_data_filter = "sensitive_data_filter"
     
     logging_config = {

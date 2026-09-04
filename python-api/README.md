@@ -41,13 +41,15 @@ Inside the project folder:
 
     - pip (runtime + dev tools, editable):
 
-            pip install -e ".[dev]"
+            pip install -e . --group dev
+
+        For runtime only, `pip install -e .`
 
     - uv (auto-creates `.venv`, faster, produces a lockfile):
 
-            uv sync --extra dev
+            uv sync
 
-    For runtime only, drop `[dev]` / `--extra dev`.
+        For runtime only, `uv sync --no-dev`
 
 
  * On macOS you might need to reactivate the venv before running the API

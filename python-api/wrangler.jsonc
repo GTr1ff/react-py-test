@@ -34,7 +34,7 @@
 			"database_name": "python-worker-wsl-db",
 			// Replace after `npx wrangler d1 create python-worker-wsl-db`.
 			// Local dev uses a local SQLite simulation and does not need a real id.
-			"database_id": "24916560-ef89-4c26-a93f-12277f8ae8e5",
+			"database_id": "",
 			"migrations_dir": "migrations"
 		}
 	],

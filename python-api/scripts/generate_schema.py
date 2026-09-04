@@ -36,7 +36,7 @@ import features.tables.roles.models  # noqa: F401, E402 — registers tables on 
 import features.tables.salaries.models  # noqa: F401, E402 — registers tables on Base.metadata
 import features.tables.settings.models  # noqa: F401, E402 — registers tables on Base.metadata
 import features.tables.tasks.models  # noqa: F401, E402 — registers tables on Base.metadata
-import features.tables.time_logs.models
+import features.tables.time_logs.models  # noqa: F401, E402 — registers tables on Base.metadata
 
 def generate_ddl() -> str:
     """Render all registered tables (and their indexes) as SQLite DDL."""
@@ -51,6 +51,5 @@ def generate_ddl() -> str:
 
 if __name__ == "__main__":
     output_path = PROJECT_ROOT / "migrations" / "0001_initial.sql"
-    output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(generate_ddl(), encoding="utf-8")
     print(f"Wrote {output_path}")
