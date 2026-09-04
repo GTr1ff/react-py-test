@@ -10,15 +10,6 @@ from core.database import Database
 from core.logging.config import setup_logging
 from core.logging.request_logger import RequestLoggerMiddleware
 from core.config import settings
-
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    app.state.db = Database(settings.DATABASE_URI)
-    await app.state.db.initialize()
-    print("worker-wip is running")
-    yield
-    await app.state.db.dispose()
-
 def create_app() -> FastAPI:
     setup_logging()
 
@@ -26,7 +17,6 @@ def create_app() -> FastAPI:
         title="worker-wip",
         description="A proof of concept FastAPI application following the FOA architecture",
         version="1.0.0",
-        lifespan=lifespan
     )
 
     origins = ["*"] if settings.ENV == "development" else []
