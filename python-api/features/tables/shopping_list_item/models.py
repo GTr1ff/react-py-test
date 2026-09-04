@@ -18,7 +18,7 @@ from core.database import Base
 class ShoppingListItemModel(Base):
 
     __tablename__ = "shopping_list_item"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
@@ -31,7 +31,7 @@ class ShoppingListItemModel(Base):
 
     user_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.user.id")
+        sqlalchemy.ForeignKey("user.id")
     )
     user_id_user: Mapped[UserModel] = relationship(
         back_populates="shopping_list_item_by_user_id", 

@@ -18,7 +18,7 @@ from core.database import Base
 class CategoryModel(Base):
 
     __tablename__ = "category"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(

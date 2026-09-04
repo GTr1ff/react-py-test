@@ -18,7 +18,7 @@ from core.database import Base
 class SessionModel(Base):
 
     __tablename__ = "session"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
@@ -31,7 +31,7 @@ class SessionModel(Base):
 
     user_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.user.id")
+        sqlalchemy.ForeignKey("user.id")
     )
     user_id_user: Mapped[UserModel] = relationship(
         back_populates="session__by_user_id", 

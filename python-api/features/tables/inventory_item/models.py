@@ -19,7 +19,7 @@ from core.database import Base
 class InventoryItemModel(Base):
 
     __tablename__ = "inventory_item"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
@@ -32,7 +32,7 @@ class InventoryItemModel(Base):
 
     user_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.user.id")
+        sqlalchemy.ForeignKey("user.id")
     )
     user_id_user: Mapped[UserModel] = relationship(
         back_populates="inventory_item_by_user_id", 
@@ -43,7 +43,7 @@ class InventoryItemModel(Base):
     
     ingredient_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.ingredient.id")
+        sqlalchemy.ForeignKey("ingredient.id")
     )
     ingredient_id_ingredient: Mapped[IngredientModel] = relationship(
         back_populates="inventory_item_by_ingredient_id", 

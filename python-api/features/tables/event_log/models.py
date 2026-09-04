@@ -18,7 +18,7 @@ from core.database import Base
 class EventLogModel(Base):
 
     __tablename__ = "event_log"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
@@ -31,7 +31,7 @@ class EventLogModel(Base):
 
     user_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.user.id")
+        sqlalchemy.ForeignKey("user.id")
     )
     user_id_user: Mapped[UserModel] = relationship(
         back_populates="event_log_by_user_id", 

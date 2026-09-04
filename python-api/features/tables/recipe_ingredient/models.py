@@ -19,19 +19,19 @@ from core.database import Base
 class RecipeIngredientModel(Base):
 
     __tablename__ = "recipe_ingredient"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "recipe_id"
 
     recipe_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.recipe.id"),
+        sqlalchemy.ForeignKey("recipe.id"),
         primary_key=True, 
         autoincrement=True, 
         index=True
     )
     ingredient_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.ingredient.id"),
+        sqlalchemy.ForeignKey("ingredient.id"),
         index=True
     )
 

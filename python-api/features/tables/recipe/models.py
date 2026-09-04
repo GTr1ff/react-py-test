@@ -18,7 +18,7 @@ from core.database import Base
 class RecipeModel(Base):
 
     __tablename__ = "recipe"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(

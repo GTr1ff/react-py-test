@@ -20,7 +20,7 @@ from core.database import Base
 class IngredientModel(Base):
 
     __tablename__ = "ingredient"
-    __table_args__ = {"schema": "public"}
+    
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
@@ -43,7 +43,7 @@ class IngredientModel(Base):
     )
     category_id: Mapped[int] = mapped_column(
         sqlalchemy.BigInteger,
-        sqlalchemy.ForeignKey("public.category.id")
+        sqlalchemy.ForeignKey("category.id")
     )
     category_id_category: Mapped[CategoryModel] = relationship(
         back_populates="ingredient_by_category_id", 
