@@ -1,12 +1,9 @@
 import logging
-from typing import AsyncIterator
-from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from feature_locator import FeatureLocator
 from core.exceptions import DatabaseException
-from core.database import Database
 from core.logging.config import setup_logging
 from core.logging.request_logger import RequestLoggerMiddleware
 from core.config import settings
