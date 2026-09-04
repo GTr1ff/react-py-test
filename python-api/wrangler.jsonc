@@ -16,7 +16,7 @@
 	"assets": {
 		// Built React SPA from ../web-static — run `bun run build` (or npm) there
 		// before `pywrangler dev`/`deploy`; wrangler errors if the directory is missing.
-		"directory": "../web-static/client/dist",
+		"directory": "../web-static/dist",
 		// Unmatched paths (client-side routes) get index.html with a 200.
 		"not_found_handling": "single-page-application",
 		// /api/* plus FastAPI's docs UI reach the Python worker; every other
