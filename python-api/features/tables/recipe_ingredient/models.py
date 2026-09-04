@@ -23,14 +23,14 @@ class RecipeIngredientModel(Base):
     __default_sort__ = "recipe_id"
 
     recipe_id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         sqlalchemy.ForeignKey("recipe.id"),
         primary_key=True, 
         autoincrement=True, 
         index=True
     )
     ingredient_id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         sqlalchemy.ForeignKey("ingredient.id"),
         index=True
     )

@@ -23,7 +23,7 @@ class InventoryItemModel(Base):
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         primary_key=True, 
         autoincrement=True,
         unique=True, 
@@ -31,7 +31,7 @@ class InventoryItemModel(Base):
     )
 
     user_id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         sqlalchemy.ForeignKey("user.id")
     )
     user_id_user: Mapped[UserModel] = relationship(
@@ -42,7 +42,7 @@ class InventoryItemModel(Base):
     )
     
     ingredient_id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         sqlalchemy.ForeignKey("ingredient.id")
     )
     ingredient_id_ingredient: Mapped[IngredientModel] = relationship(

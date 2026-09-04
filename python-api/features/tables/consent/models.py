@@ -22,7 +22,7 @@ class ConsentModel(Base):
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         primary_key=True, 
         autoincrement=True,
         unique=True, 
@@ -30,7 +30,7 @@ class ConsentModel(Base):
     )
 
     user_id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         sqlalchemy.ForeignKey("user.id")
     )
     user_id_user: Mapped[UserModel] = relationship(

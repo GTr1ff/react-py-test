@@ -24,7 +24,7 @@ class IngredientModel(Base):
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         primary_key=True, 
         autoincrement=True,
         unique=True, 
@@ -42,7 +42,7 @@ class IngredientModel(Base):
         nullable=True
     )
     category_id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         sqlalchemy.ForeignKey("category.id")
     )
     category_id_category: Mapped[CategoryModel] = relationship(

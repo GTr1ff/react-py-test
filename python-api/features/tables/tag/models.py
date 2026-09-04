@@ -19,7 +19,7 @@ class TagModel(Base):
     __default_sort__ = "id"
 
     id: Mapped[int] = mapped_column(
-        sqlalchemy.BigInteger,
+        sqlalchemy.Integer,
         primary_key=True, 
         autoincrement=True,
         unique=True, 
