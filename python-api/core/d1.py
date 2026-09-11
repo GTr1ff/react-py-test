@@ -1,15 +1,19 @@
-"""D1-backed data access for Cloudflare Python Workers.
+"""Durable Object SQLite-backed data access for Cloudflare Python Workers.
+
+Drop-in replacement for ``core/d1.py``: rename over it when applying.
 
 The Workers Python runtime (Pyodide) does not ship ``greenlet``, so
 SQLAlchemy's async engine cannot run there. Instead, SQLAlchemy is kept as
-the SQL *compiler* (D1 is SQLite, so the SQLite dialect produces compatible
-SQL) and execution happens through the D1 binding's FFI API
-(``prepare(...).bind(...).run()``).
+the SQL *compiler* (the SQLite dialect produces compatible SQL) and
+execution happens through the Durable Object storage API
+(``ctx.storage.sql.exec(...)``), which is synchronous and runs in-process
+with the object's private SQLite database.
 
-``D1Session`` implements the exact subset of the ``AsyncSession`` API used
-by the feature repositories — ``execute``, ``scalar``, ``add``, ``commit``,
-``refresh``, ``delete``, ``rollback``, ``close`` — so the repository,
-service, router and schema layers stay unchanged.
+``D1Session`` keeps its name so the swap is a pure drop-in. It implements
+the exact subset of the ``AsyncSession`` API used by the feature
+repositories — ``execute``, ``scalar``, ``add``, ``commit``, ``refresh``,
+``delete``, ``rollback``, ``close`` — so the repository, service, router and
+schema layers stay unchanged.
 """
 
 import json
@@ -33,9 +37,10 @@ def _json_default(value: Any) -> Any:
     raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
-# D1 is SQLite, so the SQLite dialect compiles compatible SQL and provides
-# the bind/result processors (date/time <-> ISO strings, Decimal <-> float,
-# bool <-> int, UUID <-> hex, JSON <-> text) that keep model types faithful.
+# Durable Object storage is SQLite, so the SQLite dialect compiles compatible
+# SQL and provides the bind/result processors (date/time <-> ISO strings,
+# Decimal <-> float, bool <-> int, UUID <-> hex, JSON <-> text) that keep
+# model types faithful.
 DIALECT = sqlite.dialect(
     json_serializer=lambda value: json.dumps(value, default=_json_default),
 )
@@ -71,18 +76,18 @@ def compile_statement(statement: ClauseElement) -> tuple[str, list[Any]]:
 
 
 def _bind_value(value: Any) -> Any:
-    """Convert one bound parameter into a value the D1 FFI accepts."""
+    """Convert one bound parameter into a value the storage API accepts."""
     if _IS_WORKERS_RUNTIME:
         if value is None:
             from pyodide.ffi import jsnull
 
-            # Python None crosses the FFI as JS `undefined`, which D1 rejects
-            # (D1_TYPE_ERROR); jsnull crosses as the JS `null` D1 expects.
+            # Python None crosses the FFI as JS `undefined`; jsnull crosses as
+            # the JS `null` that binds as SQL NULL.
             return jsnull
-        if isinstance(value, (bytes, bytearray)):
+        if isinstance(value, (bytes, bytearray, memoryview)):
             from pyodide.ffi import to_js
 
-            # D1 expects BLOB parameters as a JavaScript ArrayBuffer.
+            # BLOB parameters are bound as a JavaScript ArrayBuffer.
             return to_js(value).buffer
     return value
 
@@ -98,10 +103,10 @@ def _unwrap_null(value: Any) -> Any:
 
 
 def _result_value(column: Any, value: Any) -> Any:
-    """Convert one raw D1 column value back into the model's Python type."""
+    """Convert one raw SQLite column value back into the model's Python type."""
     value = _unwrap_null(value)
-    # D1 returns BLOB columns as a JS array of byte values (a list after
-    # to_py()); buffers can also surface as memoryview/bytearray.
+    # BLOB columns come back as an ArrayBuffer, which to_py() surfaces as a
+    # memoryview/bytearray; a plain list of byte values is handled for parity.
     if isinstance(value, (memoryview, bytearray)) or (
         isinstance(value, list) and isinstance(column.type, LargeBinary)
     ):
@@ -110,16 +115,15 @@ def _result_value(column: Any, value: Any) -> Any:
     return processor(value) if processor is not None else value
 
 
-def _rows(d1_result: Any) -> list[dict[str, Any]]:
-    """Extract result rows from a D1 result as plain Python dicts."""
-    results = d1_result.results
-    if hasattr(results, "to_py"):  # JsProxy in the Workers runtime
-        results = results.to_py()
-    return list(results)
+def _rows(rows: Any) -> list[dict[str, Any]]:
+    """Convert the JS array returned by ``cursor.toArray()`` into plain Python dicts."""
+    if hasattr(rows, "to_py"):  # JsProxy in the Workers runtime
+        rows = rows.to_py()
+    return list(rows)
 
 
 def _translate_db_error(error: Exception, sql: str, params: list[Any]) -> Exception:
-    """Map a D1/SQLite error onto the SQLAlchemy exception hierarchy.
+    """Map a SQLite error onto the SQLAlchemy exception hierarchy.
 
     Keeps ``core.db_exception_handler.handle_db_exceptions_async`` (and its
     HTTP status mapping) working unchanged in the Worker.
@@ -172,17 +176,19 @@ class _Result:
 
 
 class D1Session:
-    """AsyncSession-compatible unit of work executing against a D1 binding.
+    """AsyncSession-compatible unit of work executing against Durable Object SQLite storage.
 
-    D1 has no interactive transactions: every statement auto-commits. The
-    repositories already follow a commit-per-operation pattern, so ``add``/
-    ``delete`` queue work that ``commit`` flushes, and attribute changes on
-    loaded instances are detected by diffing against a snapshot taken at
-    load time (mirroring the ORM's flush-on-commit behavior).
+    ``ctx.storage.sql.exec`` is synchronous and every call is its own implicit
+    transaction; the ``async`` signatures are kept so the repositories, which
+    are written against ``AsyncSession``, stay unchanged. The repositories
+    already follow a commit-per-operation pattern, so ``add``/``delete`` queue
+    work that ``commit`` flushes, and attribute changes on loaded instances
+    are detected by diffing against a snapshot taken at load time (mirroring
+    the ORM's flush-on-commit behavior).
     """
 
-    def __init__(self, d1_binding: Any):
-        self._db = d1_binding
+    def __init__(self, sql_storage: Any):
+        self._sql = sql_storage
         self._pending_new: list[Any] = []
         self._pending_deleted: list[Any] = []
         self._tracked: dict[int, Any] = {}
@@ -257,14 +263,13 @@ class D1Session:
 
     # ─── Internals ──────────────────────────────────
     async def _run(self, sql: str, params: list[Any]) -> list[dict[str, Any]]:
-        statement = self._db.prepare(sql)
-        if params:
-            statement = statement.bind(*[_bind_value(value) for value in params])
         try:
-            result = await statement.run()
+            cursor = self._sql.exec(sql, *[_bind_value(value) for value in params])
+            # Consume synchronously: the cursor is only valid until the next await.
+            rows = cursor.toArray()
         except Exception as error:
             raise _translate_db_error(error, sql, params) from error
-        return _rows(result)
+        return _rows(rows)
 
     async def _insert(self, instance: Any) -> None:
         cls = type(instance)

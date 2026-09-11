@@ -28,14 +28,21 @@
 			"/openapi.json"
 		]
 	},
-	"d1_databases": [
+	// The database is the SQLite storage of the PreviewDatabase Durable Object
+	// exported by worker.py; the FastAPI app runs inside that object. Nothing to
+	// create beforehand — locally the data lives under .wrangler/state.
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "DB",
+				"class_name": "PreviewDatabase"
+			}
+		]
+	},
+	"migrations": [
 		{
-			"binding": "DB",
-			"database_name": "python-worker-wsl-db",
-			// Replace after `npx wrangler d1 create python-worker-wsl-db`.
-			// Local dev uses a local SQLite simulation and does not need a real id.
-			"database_id": "",
-			"migrations_dir": "migrations"
+			"tag": "v1",
+			"new_sqlite_classes": ["PreviewDatabase"]
 		}
 	],
 	"vars": {
