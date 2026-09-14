@@ -2,7 +2,7 @@
 
 Drop-in replacement for ``worker.py``: rename over it when applying.
 
-The FastAPI app runs *inside* the ``PreviewDatabase`` Durable Object so that
+The FastAPI app runs *inside* the ``PreviewBackend`` Durable Object so that
 SQL executes synchronously against the object's private SQLite storage: no
 database to provision, no per-query network hop, and the data lives exactly
 as long as the preview script does. The stateless ``Default`` entrypoint only
@@ -31,7 +31,7 @@ def _get_app():
     return _app
 
 
-class PreviewDatabase(DurableObject):
+class PreviewBackend(DurableObject):
     """Owns this deployment's SQLite database and serves the API on top of it."""
 
     def __init__(self, ctx, env):
@@ -72,4 +72,4 @@ class PreviewDatabase(DurableObject):
 
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
-        return await self.env.DB.getByName(DB_OBJECT_NAME).fetch(request)
+        return await self.env.BACKEND.getByName(DB_OBJECT_NAME).fetch(request)

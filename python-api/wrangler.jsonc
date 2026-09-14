@@ -28,21 +28,21 @@
 			"/openapi.json"
 		]
 	},
-	// The database is the SQLite storage of the PreviewDatabase Durable Object
+	// The database is the SQLite storage of the PreviewBackend Durable Object
 	// exported by worker.py; the FastAPI app runs inside that object. Nothing to
 	// create beforehand — locally the data lives under .wrangler/state.
 	"durable_objects": {
 		"bindings": [
 			{
-				"name": "DB",
-				"class_name": "PreviewDatabase"
+				"name": "BACKEND",
+				"class_name": "PreviewBackend"
 			}
 		]
 	},
 	"migrations": [
 		{
 			"tag": "v1",
-			"new_sqlite_classes": ["PreviewDatabase"]
+			"new_sqlite_classes": ["PreviewBackend"]
 		}
 	],
 	"vars": {

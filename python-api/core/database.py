@@ -3,7 +3,7 @@
 Drop-in replacement for ``core/database.py``: rename over it when applying.
 
 On Cloudflare Workers there is no engine: the schema lives in the SQLite
-storage of the ``PreviewDatabase`` Durable Object (see ``worker.py``), which
+storage of the ``PreviewBackend`` Durable Object (see ``worker.py``), which
 also runs the FastAPI app. Before handling each request the object publishes
 its ``ctx.storage.sql`` handle through a context variable, and ``get_db``
 wraps that handle in a :class:`core.d1.D1Session` for the request.
