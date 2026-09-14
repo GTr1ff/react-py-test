@@ -32,7 +32,7 @@ class PreviewBackend(DurableObject):
         from core.do_sqlite import DIALECT
         from core.database import Base
 
-        _get_app()  # importing the app registers every feature model on Base.metadata
+        _get_app()
         sql = self.ctx.storage.sql
         for table in Base.metadata.sorted_tables:
             sql.exec(str(CreateTable(table, if_not_exists=True).compile(dialect=DIALECT)))

@@ -7,12 +7,11 @@ from core.exceptions import DatabaseException
 from core.logging.config import setup_logging
 from core.logging.request_logger import RequestLoggerMiddleware
 from core.config import settings
-
 def create_app() -> FastAPI:
     setup_logging()
 
     application = FastAPI(
-        title="Tastebot2",
+        title="worker-wip3",
         description="A proof of concept FastAPI application following the FOA architecture",
         version="1.0.0",
     )
