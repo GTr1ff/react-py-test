@@ -1,26 +1,19 @@
 {
-	// Cloudflare Python Worker (open beta) — pywrangler flow (WSL/Linux/macOS):
-	// run with `uv run pywrangler dev`, deploy with `uv run pywrangler deploy`.
+	// Cloudflare Python Worker. On WSL/Linux/macOS run with
+	// `uv run pywrangler dev` and deploy with `uv run pywrangler deploy`.
 	"name": "python-worker-wsl",
 	"main": "worker.py",
 	"compatibility_date": "2026-08-01",
 	"compatibility_flags": [
 		"python_workers",
 		"python_dedicated_snapshot",
-		// Serve the runtime's built-in `workers`/`asgi` SDK. The installed
-		// workers-py (1.16.x) predates the external-SDK vendoring the runtime
-		// asks for at this compatibility date; once workers-py ships it, try
-		// removing this flag.
 		"disable_python_external_sdk"
 	],
 	"assets": {
-		// Built React SPA from ../web-static — run `bun run build` (or npm) there
-		// before `pywrangler dev`/`deploy`; wrangler errors if the directory is missing.
 		"directory": "../web-static/dist/client",
-		// Unmatched paths (client-side routes) get index.html with a 200.
 		"not_found_handling": "single-page-application",
-		// /api/* plus FastAPI's docs UI reach the Python worker; every other
-		// path is served from the assets directory (SPA fallback included).
+		// Only these paths reach the Python worker. Everything else is served
+		// from the assets directory, falling back to the SPA.
 		"run_worker_first": [
 			"/api/*",
 			"/docs",
@@ -29,8 +22,6 @@
 		]
 	},
 	// The database is the SQLite storage of the PreviewBackend Durable Object
-	// exported by worker.py; the FastAPI app runs inside that object. Nothing to
-	// create beforehand — locally the data lives under .wrangler/state.
 	"durable_objects": {
 		"bindings": [
 			{

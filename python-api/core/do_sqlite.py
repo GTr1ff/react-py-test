@@ -1,19 +1,8 @@
 """Durable Object SQLite-backed data access for Cloudflare Python Workers.
 
-Drop-in replacement for ``core/d1.py``: rename over it when applying.
-
 The Workers Python runtime (Pyodide) does not ship ``greenlet``, so
 SQLAlchemy's async engine cannot run there. Instead, SQLAlchemy is kept as
-the SQL *compiler* (the SQLite dialect produces compatible SQL) and
-execution happens through the Durable Object storage API
-(``ctx.storage.sql.exec(...)``), which is synchronous and runs in-process
-with the object's private SQLite database.
-
-``D1Session`` keeps its name so the swap is a pure drop-in. It implements
-the exact subset of the ``AsyncSession`` API used by the feature
-repositories — ``execute``, ``scalar``, ``add``, ``commit``, ``refresh``,
-``delete``, ``rollback``, ``close`` — so the repository, service, router and
-schema layers stay unchanged.
+the SQL *compiler* and execution happens through the DO Storage APi
 """
 
 import json
@@ -37,10 +26,6 @@ def _json_default(value: Any) -> Any:
     raise TypeError(f"Object of type {type(value).__name__} is not JSON serializable")
 
 
-# Durable Object storage is SQLite, so the SQLite dialect compiles compatible
-# SQL and provides the bind/result processors (date/time <-> ISO strings,
-# Decimal <-> float, bool <-> int, UUID <-> hex, JSON <-> text) that keep
-# model types faithful.
 DIALECT = sqlite.dialect(
     json_serializer=lambda value: json.dumps(value, default=_json_default),
 )
@@ -81,13 +66,12 @@ def _bind_value(value: Any) -> Any:
         if value is None:
             from pyodide.ffi import jsnull
 
-            # Python None crosses the FFI as JS `undefined`; jsnull crosses as
-            # the JS `null` that binds as SQL NULL.
+            # Python None crosses the FFI as JS `undefined`
             return jsnull
         if isinstance(value, (bytes, bytearray, memoryview)):
             from pyodide.ffi import to_js
 
-            # BLOB parameters are bound as a JavaScript ArrayBuffer.
+            # BLOB parameters as a JavaScript ArrayBuffer.
             return to_js(value).buffer
     return value
 
@@ -116,8 +100,8 @@ def _result_value(column: Any, value: Any) -> Any:
 
 
 def _rows(rows: Any) -> list[dict[str, Any]]:
-    """Convert the JS array returned by ``cursor.toArray()`` into plain Python dicts."""
-    if hasattr(rows, "to_py"):  # JsProxy in the Workers runtime
+    """Convert the JS array into plain Python dicts."""
+    if hasattr(rows, "to_py"):
         rows = rows.to_py()
     return list(rows)
 
@@ -175,17 +159,8 @@ class _Result:
         return _ScalarResult(self._records)
 
 
-class D1Session:
-    """AsyncSession-compatible unit of work executing against Durable Object SQLite storage.
-
-    ``ctx.storage.sql.exec`` is synchronous and every call is its own implicit
-    transaction; the ``async`` signatures are kept so the repositories, which
-    are written against ``AsyncSession``, stay unchanged. The repositories
-    already follow a commit-per-operation pattern, so ``add``/``delete`` queue
-    work that ``commit`` flushes, and attribute changes on loaded instances
-    are detected by diffing against a snapshot taken at load time (mirroring
-    the ORM's flush-on-commit behavior).
-    """
+class DOSession:
+    """AsyncSession-compatible unit of work executing against Durable Object SQLite storage."""
 
     def __init__(self, sql_storage: Any):
         self._sql = sql_storage
@@ -265,7 +240,6 @@ class D1Session:
     async def _run(self, sql: str, params: list[Any]) -> list[dict[str, Any]]:
         try:
             cursor = self._sql.exec(sql, *[_bind_value(value) for value in params])
-            # Consume synchronously: the cursor is only valid until the next await.
             rows = cursor.toArray()
         except Exception as error:
             raise _translate_db_error(error, sql, params) from error

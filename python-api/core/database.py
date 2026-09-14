@@ -1,21 +1,16 @@
 """Worker-mode database plumbing: declarative base + Durable Object session dependency.
 
-Drop-in replacement for ``core/database.py``: rename over it when applying.
-
 On Cloudflare Workers there is no engine: the schema lives in the SQLite
-storage of the ``PreviewBackend`` Durable Object (see ``worker.py``), which
-also runs the FastAPI app. Before handling each request the object publishes
-its ``ctx.storage.sql`` handle through a context variable, and ``get_db``
-wraps that handle in a :class:`core.d1.D1Session` for the request.
+storage of the ``PreviewDatabase`` Durable Object
 """
 
 from contextvars import ContextVar, Token
-from typing import Any, AsyncGenerator
+from typing import Any
+from collections.abc import AsyncGenerator
 
-from fastapi import Request
 from sqlalchemy.orm import DeclarativeBase
 
-from core.d1 import D1Session
+from core.do_sqlite import DOSession
 
 
 class Base(DeclarativeBase):
@@ -35,9 +30,9 @@ def unbind_sql_storage(token: Token) -> None:
     _sql_storage.reset(token)
 
 
-async def get_db(request: Request) -> AsyncGenerator[D1Session, None]:
+async def get_db() -> AsyncGenerator[DOSession, None]:
     """FastAPI dependency yielding a Durable Object SQLite-backed session for this request."""
-    session = D1Session(_sql_storage.get())
+    session = DOSession(_sql_storage.get())
     try:
         yield session
     except Exception:
