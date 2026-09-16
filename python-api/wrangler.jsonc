@@ -30,12 +30,14 @@
 			}
 		]
 	},
-	"migrations": [
-		{
-			"tag": "v1",
-			"new_sqlite_classes": ["PreviewBackend"]
+	// Declarative Durable Object lifecycle (replaces the legacy `migrations` array).
+	// Note: once deployed with `exports`, the Worker cannot go back to `migrations`.
+	"exports": {
+		"PreviewBackend": {
+			"type": "durable-object",
+			"storage": "sqlite"
 		}
-	],
+	},
 	"vars": {
 		"ENV": "development"
 	}
