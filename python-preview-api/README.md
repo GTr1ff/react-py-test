@@ -1,3 +1,11 @@
+## What is this folder?
+Rosetic Studio's app preview is powered by a real, running backend, not a mockup. This Python API is the backend that runs behind the preview inside Studio, and it is included in every generated project regardless of the API you selected during onboarding.
+
+- **If you selected Python during onboarding**, this is your production backend and where your real development should happen.
+- **If you selected a different API (for example C# or Java)**, this folder is a copy of the preview backend only. Nothing in your generated code uses it, and your selected API lives in its own folder next to this one. It is safe to delete this folder, but note that it will be regenerated on subsequent code generations.
+
+Running the preview directly on the C# and Java APIs is on the roadmap. Once that is in place, newly generated projects will contain a single backend folder for your chosen API.
+
 ## Requirements
 - Python 3.11 or higher
 
